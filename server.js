@@ -3,7 +3,19 @@ const ejs = require('ejs');
 const bodyparser = require('body-parser');
 const http = require('http');
 const container = require('./container');
+const cookieparser = require('cookie-parser');
+const validator = require('express-validator');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+const mongoose = require('mongoose');
+const flash = require('flash');
+const passport = require('passport');
+
+
  container.resolve(function(users){
+
+   mongoose.Promise = global.Promise;
+   mongoose.connect('mongodb://localhost/footballchat');
     const app = SetupExpress();
 
     function SetupExpress() {
@@ -22,9 +34,25 @@ const container = require('./container');
 
 
      function configExpress(app) {
+
+      require('./passport/passport-local');
+
        app.use(express.static('public'));
        app.set('view engine' , 'ejs');
        app.use(bodyparser.json());
        app.use(bodyparser.urlencoded({extended: true}));
-     }
+       app.use(cookieparser());
+
+       app.use(validator());
+       app.use(session({
+         secret:'mysecretkey123454321qwerrty',
+         resave: true,
+         saveInitialized: true,
+         store: new MongoStore({mongooseConnection: mongoose.connection})
+       }));
+
+       app.use(flash());
+       app.use(passport.initialize());
+       app.use(passport.session());
+      }
   });
