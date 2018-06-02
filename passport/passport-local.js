@@ -15,28 +15,52 @@ passport.deserializeUser((id, done) =>{
 });
 
 passport.use('local.signup', new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password',
-  passReqToCallback: true,
-}, (res,email, password, done) => {
+    usernameField: 'email',
+    passwordField: 'password',
+    passReqToCallback: true
+}, (req, email, password, done) => {
 
-  User.findOne({'email': email}, (err, user) => {
-    if(err){
-        return done(err);
-    }
-    if(user){
-      return done(null,false, req.flash('error', 'User with  email already exists'));
-    }
+    User.findOne({'email': email}, (err, user) => {
+       if(err){
+           return done(err);
+       }
 
-    const newUser = new User();
-    newUser.username = req.body.username;
-    newUser.email = req.body.email;
-    newUser.password = newUser.encryptPassword(req.body.password);
+        if(user){
+            return done(null, false, req.flash('error', 'User with email already exist'));
+        }
 
-    newUser.save((err) => {
-      done(null, newUser);
+        const newUser = new User();
+        newUser.username = req.body.username;
+        newUser.fullname = req.body.username;
+        newUser.email = req.body.email;
+        newUser.password = newUser.encryptPassword(req.body.password);
+
+        newUser.save((err) => {
+            done(null, newUser);
+        });
     });
-  });
+}));
 
 
+
+passport.use('local.login', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password',
+    passReqToCallback: true
+}, (req, email, password, done) => {
+
+    User.findOne({'email': email}, (err, user) => {
+       if(err){
+           return done(err);
+       }
+
+       const messages = [];
+
+       if(!user || !user.validPassword(password)){
+         messages.push('Email or password is not valid');
+         return done(null , false , req.flash('error', messages));
+       }
+
+       return done(null, user);
+     });
 }));

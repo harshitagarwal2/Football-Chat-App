@@ -8,11 +8,12 @@ const validator = require('express-validator');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
-const flash = require('flash');
+const flash = require('connect-flash');
 const passport = require('passport');
 
+const users= require('./controllers/users');
 
- container.resolve(function(users){
+ container.resolve(function(users,_){
 
    mongoose.Promise = global.Promise;
    mongoose.connect('mongodb://localhost/footballchat');
@@ -30,8 +31,6 @@ const passport = require('passport');
       users.setRouting(router);
       app.use(router);
     }
-
-
 
      function configExpress(app) {
 
@@ -51,8 +50,12 @@ const passport = require('passport');
          store: new MongoStore({mongooseConnection: mongoose.connection})
        }));
 
+       var mycode = 'String';
+
        app.use(flash());
        app.use(passport.initialize());
        app.use(passport.session());
+
+       app.locals._ = _;
       }
   });
