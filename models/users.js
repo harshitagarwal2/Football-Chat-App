@@ -32,7 +32,6 @@ const userSchema = mongoose.Schema({
     type: String,
     default: '',
   },
-  googleTokens: Array
 });
 
 userSchema.methods.encryptPassword = function(password){

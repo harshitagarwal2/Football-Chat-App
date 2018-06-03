@@ -35,6 +35,9 @@ const users= require('./controllers/users');
      function configExpress(app) {
 
       require('./passport/passport-local');
+      require('./passport/passport-facebook');
+      require('./passport/passport-google');
+
 
        app.use(express.static('public'));
        app.set('view engine' , 'ejs');
