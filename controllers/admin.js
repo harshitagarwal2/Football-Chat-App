@@ -1,24 +1,47 @@
-'use strict'
-
-const path = require('path');
-const fs = require('fs');
+// const path = require('path');
+// const fs = require('fs');
 const formidable = require('formidable');
+const Club = require('../models/club');
+const aws = require('../helpers/AWSupload');
 
 module.exports = function(){
-  return{
-    setRouting: function(router){
-      router.get('/dashboard', this.adminPage);
+    return {
+        setRouting: function(router){
+            router.get('/dashboard', this.adminPage);
 
-      router.post('/uploadFile', this.uploadFile);
-    },
-    adminPage: function(req,res){
-      res.render('admin/dashboard');
-    },
-    uploadFile: function(req,res){
-      const form = formidable.IncomingForm();
-      form.uploadDir = path.join(__dirname, '../public/uploads');
+            router.post('/uploadFile', aws.Upload.any(), this.uploadFile);
+            router.post('/dashboard', this.adminPostPage);
+        },
 
-      form.on()
+        adminPage: function(req, res){
+            res.render('admin/dashboard');
+        },
+
+        adminPostPage: function(req, res){
+            const newClub = new Club();
+            newClub.name = req.body.club;
+            newClub.country = req.body.country;
+            newClub.image = req.body.upload;
+            newClub.save((err) => {
+                res.render('admin/dashboard');
+            })
+        },
+
+        uploadFile: function(req, res) {
+            const form = new formidable.IncomingForm();
+
+            form.on('file', (field, file) => {
+
+            });
+
+            form.on('error', (err) => {
+            });
+
+            form.on('end', () => {
+
+            });
+
+            form.parse(req);
+        }
     }
-  }
 }
