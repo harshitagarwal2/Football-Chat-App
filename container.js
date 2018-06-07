@@ -8,7 +8,8 @@ const simpleDependecies = [
     ['passport','passport'],
     ['formidable', 'formidable'],
     ['Club', './models/clubs'],
-    ['aws', './helpers/AWSupload']
+    ['aws', './helpers/AWSupload'],
+    ['async' , 'async']
 ];
 
 container.register('_' , function(){ return require('lodash')});

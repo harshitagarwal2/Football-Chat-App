@@ -8,7 +8,6 @@ const passport = require('passport');
      setRouting:function(router){
        router.get('/', this.indexPage );
        router.get('/signup', this.getSignup);
-       router.get('/home', this.homePage);
        router.get('/auth/facebook' , this.getFacebookLogin);
        router.get('/auth/facebook/callback' , this.facebookLogin);
        router.get('/auth/google', this.getGoogleLogin);
@@ -39,10 +38,6 @@ const passport = require('passport');
           failureRedirect: '/signup',
           failureFlash: true,
         }),
-
-        homePage: function(req,res){
-          return res.render('home');
-        },
 
         getFacebookLogin: passport.authenticate('facebook' , {
           scope:'email'
